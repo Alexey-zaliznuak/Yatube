@@ -58,8 +58,10 @@ class PostCreateFormTests(TestCase):
 
     def test_auth_can_create_post(self):
         Posts_count = Post.objects.count()
-        auth_resp = self.authorized_client.post(**self.create_kwargs)
-        self.assertEqual(Post.objects.count(), Posts_count + 1)
+        for i in range(6):
+            auth_resp = self.authorized_client.post(**self.create_kwargs)
+
+        self.assertEqual(Post.objects.count(), Posts_count + 6)
 
         self.assertEqual(auth_resp.status_code, 200)
 
@@ -116,6 +118,7 @@ class CommentCreateFormTest(TestCase):
 
     def test_auth_can_create_comment(self):
         Comments_count = Comment.objects.count()
-        auth_resp = self.authorized_client.post(**self.kwargs)
-        self.assertEqual(Comment.objects.count(), Comments_count + 1)
+        for i in range(6):
+            auth_resp = self.authorized_client.post(**self.kwargs)
+        self.assertEqual(Comment.objects.count(), Comments_count + 6)
         self.assertEqual(auth_resp.status_code, 200)

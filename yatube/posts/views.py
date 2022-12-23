@@ -43,6 +43,13 @@ def group_list(request, slug):
 
 def profile(request, username):
     user = get_object_or_404(User, username=username)
+    user_auth = request.user.is_authenticated
+
+    following = user_auth and Follow.objects.filter(
+        user=request.user, author=user
+    ).exists()
+
+    see_self_profile = user_auth and username == request.user.username
 
     posts = user.posts.all()
     paginator = Paginator(posts, POSTS_PER_PAGE)
@@ -50,16 +57,12 @@ def profile(request, username):
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
-    following = False
-    if request.user.is_authenticated:
-        following = Follow.objects.filter(
-            user=request.user, author=user).exists()
-
     context = {
         'page_obj': page_obj,
         'posts_count': posts.count(),
         'author': user,
-        'following': following
+        'following': following,
+        'see_self_profile': see_self_profile,
     }
     return render(request, 'posts/profile.html', context)
 
@@ -141,8 +144,7 @@ def add_comment(request, post_id):
 
 @login_required
 def follow_index(request):
-    following = Follow.objects.filter(user=request.user).values('author')
-    posts = Post.objects.filter(author__in=following)
+    posts = Post.objects.filter(author__following__user=request.user)
     paginator = Paginator(posts, POSTS_PER_PAGE)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
@@ -155,14 +157,8 @@ def follow_index(request):
 
 @login_required
 def profile_follow(request, username):
-    if (
-        request.user.username != username
-        and not Follow.objects.filter(
-            user=request.user,
-            author=User.objects.get(username=username)
-        ).exists()
-    ):
-        Follow.objects.create(
+    if (request.user.username != username):
+        Follow.objects.get_or_create(
             user=request.user,
             author=User.objects.get(username=username)
         )

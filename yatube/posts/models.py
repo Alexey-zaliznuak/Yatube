@@ -6,8 +6,8 @@ User = get_user_model()
 
 
 class Group(CreatedModel):
-    title = models.CharField(max_length=200, verbose_name="Имя группы")
-    slug = models.SlugField(unique=True, verbose_name="slug группы")
+    title = models.CharField("Имя группы", max_length=200)
+    slug = models.SlugField("slug группы", unique=True)
     description = models.TextField()
 
     def __str__(self):
@@ -15,7 +15,7 @@ class Group(CreatedModel):
 
 
 class Post(CreatedModel):
-    text = models.TextField(null=True, verbose_name="Текст поста")
+    text = models.TextField("Текст поста", null=True)
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
@@ -50,8 +50,8 @@ class Post(CreatedModel):
 class Comment(CreatedModel):
     text = models.TextField('Текст', help_text='Текст нового комментария')
     created = models.DateTimeField(
+        "Дата публикации",
         auto_now_add=True,
-        verbose_name="Дата публикации"
     )
     author = models.ForeignKey(
         User,

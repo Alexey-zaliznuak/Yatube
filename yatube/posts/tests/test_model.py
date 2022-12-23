@@ -2,6 +2,8 @@ from django.test import TestCase
 
 from ..models import Group, Post, User
 
+LEN_POST_SHORT_DESCRIBE = 15
+
 
 class PostModelTest(TestCase):
     @classmethod
@@ -20,8 +22,10 @@ class PostModelTest(TestCase):
 
     def test_models_have_correct_object_names(self):
         post = PostModelTest.post
-        expected_object_name = post.text[:15]
-        self.assertEqual(expected_object_name, str(post)[:15])
+        expected_object_name = post.text[:LEN_POST_SHORT_DESCRIBE]
+        self.assertEqual(
+            expected_object_name, str(post)[:LEN_POST_SHORT_DESCRIBE]
+        )
 
         group = PostModelTest.group
         expected_object_name = self.group.title
